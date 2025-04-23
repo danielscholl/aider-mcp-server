@@ -155,23 +155,6 @@ Example:
 
 ## Integration with MCP Clients
 
-### Claude Code (CLI)
-
-Add the following to your `~/.config/claude-code/config.json`:
-
-```json
-{
-  "mcpServers": {
-    "aider-mcp-server": {
-      "transport": "sse",
-      "url": "http://localhost:8050/sse"
-    }
-  }
-}
-```
-
-### SSE Integration (Other Clients)
-
 Configure your MCP client to connect to the SSE endpoint:
 
 ```json
@@ -204,26 +187,29 @@ Configure your MCP client to run the server via stdio:
 }
 ```
 
-### Docker Container Integration
+### Integration with MCP Clients
 
-Build and run the Docker container:
-
-```bash
-docker build -t aider-mcp:latest .
-docker run -p 8050:8050 aider-mcp:latest
-```
-
-For Docker with stdio configuration:
+#### Using Docker 
 
 ```json
 {
   "mcpServers": {
     "aider-mcp-server": {
-      "transport": "stdio",
       "command": "docker",
-      "args": ["run", "--rm", "-i", "-e", "TRANSPORT=stdio", "aider-mcp:latest"]
+      "args": [ "run", "--rm", "-i",
+        "-e", "TRANSPORT", 
+        "-e", "OPENAI_API_KEY",
+        "-e", "ANTHROPIC_API_KEY",
+        "-e", "GEMINI_API_KEY",
+        "danielscholl/aider-mcp-server:main"
+      ],
+      "env": {
+        "TRANSPORT": "stdio",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
     }
   }
 }
 ```
-
