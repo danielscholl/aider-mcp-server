@@ -197,17 +197,21 @@ Configure your MCP client to run the server via stdio:
     "aider-mcp-server": {
       "command": "docker",
       "args": [ "run", "--rm", "-i",
+        "-v", "${workspaceFolder}:/workspace",
+        "-w", "/workspace",
         "-e", "TRANSPORT", 
         "-e", "OPENAI_API_KEY",
         "-e", "ANTHROPIC_API_KEY",
         "-e", "GEMINI_API_KEY",
+        "-e", "EDITOR_MODEL",
         "danielscholl/aider-mcp-server"
       ],
       "env": {
         "TRANSPORT": "stdio",
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
-        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "EDITOR_MODEL": "${EDITOR_MODEL:-gemini/gemini-2.5-pro-preview-03-25}"
       }
     }
   }
