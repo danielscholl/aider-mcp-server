@@ -42,8 +42,6 @@ jobs:
           tags: |
             type=raw,value=latest
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
             ${{ github.event_name == 'workflow_dispatch' && inputs.tag != '' && format('type=raw,value={0}', inputs.tag) || '' }}
 
       - name: Build and push

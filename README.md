@@ -201,7 +201,7 @@ Configure your MCP client to run the server via stdio:
         "-e", "OPENAI_API_KEY",
         "-e", "ANTHROPIC_API_KEY",
         "-e", "GEMINI_API_KEY",
-        "danielscholl/aider-mcp-server:main"
+        "danielscholl/aider-mcp-server"
       ],
       "env": {
         "TRANSPORT": "stdio",
