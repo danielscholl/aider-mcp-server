@@ -15,8 +15,8 @@ By discretely offloading work to Aider, we can not only reduce costs but use Cla
 - Be sure to comment every function and class with clear doc strings.
 - Don't mock any tests - run real commands and expect them to pass case insensitive.
 - Document the usage of the MCP server in the README.md
-- every tool .py file musst have a respective test .py file.
-- every tool .py must only have a single responsibility - one method.
+- Every atom must be tested in a respective tests/*_test.py file.
+- every atom/tools/*.py must only have a single responsibility - one method.
 - if for whatever reason you need additional python packages use uv add <package_name>.
 
 ### Specific Implementation Details
@@ -26,7 +26,37 @@ By discretely offloading work to Aider, we can not only reduce costs but use Cla
 
 ## Codebase Structure
 
-- Follow the codebase Structure provided in the mcp-mem0 sample.
+- src/
+  - aider_mcp_server/
+    - __init__.py
+    - __main__.py
+    - server.py
+      - serve(editor_model: str = DEFAULT_EDITOR_MODEL, current_working_dir: str = ".", architect_model: str = None) -> None
+    - atoms/
+      - __init__.py
+      - tools/
+        - __init__.py
+        - aider_ai_code.py
+          - code_with_aider(ai_coding_prompt: str, relative_editable_files: List[str], relative_readonly_files: List[str] = []) -> str
+            - runs one shot aider based on ai_docs/programmable-aider-documentation.md
+            - outputs 'success' or 'failure'
+        - aider_list_models.py
+          - list_models(substring: str) -> List[str]
+            - calls aider.models.fuzzy_match_models(substr: str) and returns the list of models
+      - utils.py
+        - DEFAULT_EDITOR_MODEL = "gemini/gemini-2.5-pro-exp-03-25"
+        - DEFAULT_ARCHITECT_MODEL = "gemini/gemini-2.5-pro-exp-03-25"
+      - data_types.py
+    - tests/
+      - __init__.py
+      - atoms/
+        - __init__.py
+        - tools/
+          - __init__.py
+          - test_aider_ai_code.py
+            - here create tests for basic 'math' functionality: 'add, 'subtract', 'multiply', 'divide'. Use temp dirs.
+          - test_aider_list_models.py
+            - here create a real call to list_models(openai) and assert gpt-4o substr in list.
 
 ## Core Tool Commands to Implement (MVP)
 
