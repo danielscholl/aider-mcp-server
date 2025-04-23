@@ -110,7 +110,7 @@ def ai_code(coder: Coder, params: AICodeParams) -> None:
 def code_with_aider(
     ai_coding_prompt: str, 
     relative_editable_files: List[str], 
-    relative_readonly_files: List[str] = [],
+    relative_readonly_files: List[str] = None,
     settings: Optional[Dict] = None,
     editor_model: str = None,
     architect_model: Optional[str] = None,
@@ -136,7 +136,9 @@ def code_with_aider(
     
     # Make paths absolute based on current_working_dir
     editable_files = [os.path.join(current_working_dir, file) for file in relative_editable_files]
-    readonly_files = [os.path.join(current_working_dir, file) for file in relative_readonly_files]
+    readonly_files = []
+    if relative_readonly_files:
+        readonly_files = [os.path.join(current_working_dir, file) for file in relative_readonly_files]
     
     # Configure whether to use architect mode
     use_architect = architect_model is not None

@@ -1,6 +1,24 @@
 # Aider MCP Server
 
-A Machine Cognition Protocol (MCP) server that provides AI coding capabilities using Aider.
+> A Machine Cognition Protocol (MCP) server that provides AI coding capabilities using Aider.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Beta-yellow" alt="Status: Beta">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-green" alt="Python: 3.10+">
+</p>
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Server](#running-the-server)
+- [MCP Tools](#mcp-tools)
+- [Integration with MCP Clients](#integration-with-mcp-clients)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ## Overview
 
@@ -12,6 +30,15 @@ This MCP server leverages Aider, a powerful AI coding assistant, to provide codi
 - **Model Selection**: Query available models to choose the most appropriate one for your task
 - **Flexible Configuration**: Configure Aider sessions with customizable settings
 - **Multi-transport Support**: Run via Server-Sent Events (SSE) or stdio for flexible integration
+
+## Prerequisites
+
+- **Python**: 3.10 or higher
+- **Package Manager**: uv (recommended) or pip
+- **API Keys**: Depending on the models you want to use, you'll need API keys for:
+  - OpenAI (for GPT models)
+  - Anthropic (for Claude models)
+  - Google (for Gemini models)
 
 ## Installation
 
@@ -32,13 +59,40 @@ This MCP server leverages Aider, a powerful AI coding assistant, to provide codi
    uv run pytest
    ```
 
-## Usage
+## Configuration
 
-### Starting the Server
-
-Run the MCP server:
+Configure the server behavior using environment variables in a `.env` file:
 
 ```bash
+# Create environment file from example
+cp .env.example .env
+```
+
+Edit the `.env` file to configure transport, host, port, and API keys.
+
+| Variable            | Description                                | Default      | Required |
+| ------------------- | ------------------------------------------ | ------------ | -------- |
+| `TRANSPORT`         | Transport protocol (sse or stdio)          | `sse`        | No       |
+| `HOST`              | Host to bind to when using SSE transport   | `0.0.0.0`    | No       |
+| `PORT`              | Port to listen on when using SSE transport | `8050`       | No       |
+| `OPENAI_API_KEY`    | API key for OpenAI models                  |              | *        |
+| `ANTHROPIC_API_KEY` | API key for Anthropic models               |              | *        |
+| `GEMINI_API_KEY`    | API key for Google Gemini models           |              | *        |
+
+*Required only if using models from that provider
+
+### Command Line Options
+
+- `--editor-model`: Model to use for editing (default: gemini/gemini-2.5-pro-exp-03-25)
+- `--architect-model`: Model to use for architecture planning (optional)
+- `--cwd`: Current working directory (default: current directory)
+
+## Running the Server
+
+### Start the Server (SSE Mode)
+
+```bash
+# Using the module directly
 uv run python -m aider_mcp_server
 ```
 
@@ -48,54 +102,20 @@ Or with custom settings:
 uv run python -m aider_mcp_server --editor-model "gemini/gemini-2.5-pro-exp-03-25" --cwd "/path/to/project"
 ```
 
-### Environment Variables
+You should see output similar to:
 
-Copy the `.env.example` file to `.env` and adjust the settings as needed:
-
-```bash
-cp .env.example .env
+```
+Starting server with transport: sse
+Using SSE transport on 0.0.0.0:8050
 ```
 
-Edit the `.env` file to configure transport, host, port, and API keys.
+### Using stdio Mode
 
-### Command Line Options
+When using stdio mode, you don't need to start the server separately - the MCP client will start it automatically when configured properly (see [Integration with MCP Clients](#integration-with-mcp-clients)).
 
-- `--editor-model`: Model to use for editing (default: gemini/gemini-2.5-pro-exp-03-25)
-- `--architect-model`: Model to use for architecture planning (optional)
-- `--cwd`: Current working directory (default: current directory)
+## MCP Tools
 
-## Integration with MCP Clients
-
-### SSE Transport Configuration
-
-Configure your MCP client to connect to the SSE endpoint:
-
-```json
-{
-  "url": "http://localhost:8050"
-}
-```
-
-### Stdio Transport Configuration
-
-Configure your MCP client to run the server via stdio:
-
-```json
-{
-  "command": ["uv", "run", "python", "-m", "aider_mcp_server"]
-}
-```
-
-### Docker Container Integration
-
-Build and run the Docker container:
-
-```bash
-docker build -t aider-mcp:latest .
-docker run -p 8050:8050 aider-mcp:latest
-```
-
-## Available Tools
+The Aider MCP server exposes the following tools:
 
 ### ai_code
 
@@ -133,6 +153,77 @@ Example:
 }
 ```
 
-## License
+## Integration with MCP Clients
 
-MIT
+### Claude Code (CLI)
+
+Add the following to your `~/.config/claude-code/config.json`:
+
+```json
+{
+  "mcpServers": {
+    "aider-mcp-server": {
+      "transport": "sse",
+      "url": "http://localhost:8050/sse"
+    }
+  }
+}
+```
+
+### SSE Integration (Other Clients)
+
+Configure your MCP client to connect to the SSE endpoint:
+
+```json
+{
+  "mcpServers": {
+    "aider-mcp-server": {
+      "transport": "sse",
+      "serverUrl": "http://localhost:8050/sse"
+    }
+  }
+}
+```
+
+### Stdio Integration
+
+Configure your MCP client to run the server via stdio:
+
+```json
+{
+  "mcpServers": {
+    "aider-mcp-server": {
+      "transport": "stdio",
+      "command": "python",
+      "args": ["-m", "aider_mcp_server"],
+      "env": {
+        "TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+### Docker Container Integration
+
+Build and run the Docker container:
+
+```bash
+docker build -t aider-mcp:latest .
+docker run -p 8050:8050 aider-mcp:latest
+```
+
+For Docker with stdio configuration:
+
+```json
+{
+  "mcpServers": {
+    "aider-mcp-server": {
+      "transport": "stdio",
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-e", "TRANSPORT=stdio", "aider-mcp:latest"]
+    }
+  }
+}
+```
+

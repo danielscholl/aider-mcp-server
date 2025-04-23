@@ -28,8 +28,8 @@ class AiderContext:
 
 
 @asynccontextmanager
-async def aider_lifespan(server: FastMCP, editor_model: str, architect_model: Optional[str], 
-                        current_working_dir: str) -> AsyncIterator[AiderContext]:
+async def aider_lifespan(server: FastMCP, editor_model: str, architect_model: Optional[str] = None, 
+                        current_working_dir: str = ".") -> AsyncIterator[AiderContext]:
     """
     Manages the Aider client lifecycle.
     
@@ -67,18 +67,32 @@ def serve(editor_model: str = DEFAULT_EDITOR_MODEL,
     # Load environment variables
     load_dotenv()
     
-    # Create a partial function for the lifespan to include our parameters
-    async def lifespan_wrapper(server: FastMCP) -> AsyncIterator[AiderContext]:
-        async with aider_lifespan(server, editor_model, architect_model, current_working_dir) as context:
-            yield context
-    
     # Initialize FastMCP server
+    # Handle host and port only when using SSE transport
+    host = os.getenv("HOST")
+    if not host:
+        host = "0.0.0.0"
+        
+    port = os.getenv("PORT")
+    if not port:
+        port = 8050
+    else:
+        port = int(port)
+    
+    # Create a lifespan function that captures our parameters
+    # Need to use partial to bind parameters to the context manager
+    from functools import partial
+    lifespan_with_params = partial(aider_lifespan, 
+                                 editor_model=editor_model, 
+                                 architect_model=architect_model, 
+                                 current_working_dir=current_working_dir)
+    
     mcp = FastMCP(
         "aider-mcp",
         description="MCP server for integrating Aider AI coding tools",
-        lifespan=lifespan_wrapper,
-        host=os.getenv("HOST", "0.0.0.0"),
-        port=int(os.getenv("PORT", "8050"))
+        lifespan=lifespan_with_params,
+        host=host,
+        port=port
     )
     
     # Register tools
@@ -88,7 +102,7 @@ def serve(editor_model: str = DEFAULT_EDITOR_MODEL,
         ctx: Context, 
         ai_coding_prompt: str, 
         relative_editable_files: list[str], 
-        relative_readonly_files: list[str] = [],
+        relative_readonly_files: list[str] = None,
         settings: Optional[dict] = None
     ) -> str:
         """
@@ -134,11 +148,16 @@ def serve(editor_model: str = DEFAULT_EDITOR_MODEL,
     transport = os.getenv("TRANSPORT", "sse")
     
     try:
+        print(f"Starting server with transport: {transport}", file=sys.stderr)
         if transport.lower() == 'stdio':
             # For stdio, we need to use the specific stdio async method
+            print("Using stdio transport", file=sys.stderr)
             asyncio.run(mcp.run_stdio_async())
         else:
             # For SSE, we'll use the specific SSE async method
+            print(f"Using SSE transport on {host}:{port}", file=sys.stderr)
             asyncio.run(mcp.run_sse_async())
     except Exception as e:
         print(f"Server error: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
