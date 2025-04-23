@@ -11,8 +11,7 @@ RUN pip install uv
 COPY . .
 
 # Install packages
-RUN python -m venv .venv
-RUN uv pip install -e .
+RUN uv pip install --system -e .
 
 EXPOSE ${PORT}
 
