@@ -56,7 +56,7 @@ By discretely offloading work to Aider, we can not only reduce costs but use Cla
           - list_models(substring: str) -> List[str]
             - calls aider.models.fuzzy_match_models(substr: str) and returns the list of models
       - utils.py
-        - DEFAULT_EDITOR_MODEL = "gemini/gemini-2.5-pro-exp-03-25"
+        - DEFAULT_EDITOR_MODEL = "gemini/gemini-2.5-pro-preview-03-25"
         - DEFAULT_ARCHITECT_MODEL = "gemini/gemini-2.5-pro-exp-03-25"
       - data_types.py
     - tests/

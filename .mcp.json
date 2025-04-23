@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "aider-mcp-server": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "aider_mcp_server",
+        "--editor-model",
+        "gemini/gemini-2.5-pro-preview-03-25",
+        "--cwd",
+        "."
+      ],
+      "env": {
+        "TRANSPORT": "stdio"
+      }
+    }
+  }
+}
