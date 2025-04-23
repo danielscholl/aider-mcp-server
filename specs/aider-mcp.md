@@ -9,7 +9,7 @@ By discretely offloading work to Aider, we can not only reduce costs but use Cla
 
 ## Broad Implementation details
 
-- First, READ ai_docs/* to understand a sample mcp server.
+- First, READ ai_docs/* to understand a sample mcp server using fastmcp.
 - Mirror the work done inside `of ai_docs/mcp-mem0.xml`. Here we have a complete example of how to build a mcp server. We also have a complete codebase structure that we want to replicate. With some slight tweaks - see `Codebase Structure` below.
 - Be sure to use load_dotenv() in the tests.
 - Be sure to comment every function and class with clear doc strings.
@@ -20,17 +20,21 @@ By discretely offloading work to Aider, we can not only reduce costs but use Cla
 - If for whatever reason you need additional python packages use uv add <package_name>.
 - Setup directions should be simple
   - git clone
-  - uv sync
-  - setup .env
+  - uv pip install -e .
   - test uv run pytest
-
-
+  - run uv run python -m aider_mcp_server
 
 ### Specific Implementation Details
+
 - When we run aider run in no commit mode, we should not commit any changes to the codebase.
 - If architect_model is not provided, don't use architect mode.
 - Every cpability must be tested in a respective tests/*_test.py file.
 - every capability/tools/*.py must only have a single responsibility - one method.
+- requires-python = ">=3.12"
+- dependencies
+  - aider-chat>=0.82.2
+  - fastmcp>=2.2.1
+  - pydantic>=2.11.3
 
 ## Codebase Structure
 
