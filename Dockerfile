@@ -22,4 +22,4 @@ WORKDIR /workspace
 EXPOSE ${PORT}
 
 # Command to run the MCP server with the workspace as working directory
-CMD ["uv", "run", "python", "-m", "aider_mcp_server", "--cwd", "/workspace", "--editor-model", "${EDITOR_MODEL}"]
+CMD ["sh", "-c", "uv run python -m aider_mcp_server --cwd /workspace --editor-model \"$EDITOR_MODEL\""]

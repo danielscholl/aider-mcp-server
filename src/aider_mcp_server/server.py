@@ -5,7 +5,7 @@ Main server module for the Aider MCP server.
 import os
 import sys
 import asyncio
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from fastmcp import FastMCP, Context
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
@@ -101,9 +101,9 @@ def serve(editor_model: str = DEFAULT_EDITOR_MODEL,
     async def ai_code(
         ctx: Context, 
         ai_coding_prompt: str, 
-        relative_editable_files: list[str], 
-        relative_readonly_files: list[str] = None,
-        settings: Optional[dict] = None
+        relative_editable_files: List[str], 
+        relative_readonly_files: Optional[List[str]] = None,
+        settings: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         Run Aider to perform coding tasks.

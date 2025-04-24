@@ -6,9 +6,11 @@ dist/
 wheels/
 *.egg-info
 
+# Cursor
+.cursor/
+
 # Virtual environments
 .venv
-
 .env
 
 # Byte-compiled / optimized / DLL files
