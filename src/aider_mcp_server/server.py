@@ -17,6 +17,7 @@ from aider_mcp_server.capabilities.utils import DEFAULT_EDITOR_MODEL
 # Import tools
 from aider_mcp_server.capabilities.tools.aider_ai_code import code_with_aider
 from aider_mcp_server.capabilities.tools.aider_list_models import list_models
+from aider_mcp_server.capabilities.tools.aider_ask import ask_question as ask_question_sync
 
 
 @dataclass
@@ -143,6 +144,12 @@ def serve(editor_model: str = DEFAULT_EDITOR_MODEL,
             List of matching model names
         """
         return list_models(substring)
+
+    @mcp.tool()
+    async def ask_question(ctx: Context, prompt: str, model: str | None = None) -> str:
+        """Ask a question using the specified model and return the response."""
+
+        return ask_question_sync(prompt, model)
     
     # Run the server
     transport = os.getenv("TRANSPORT", "sse")

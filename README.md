@@ -30,6 +30,7 @@ This MCP server leverages Aider, a powerful AI coding assistant, to provide codi
 - **Model Selection**: Query available models to choose the most appropriate one for your task
 - **Flexible Configuration**: Configure Aider sessions with customizable settings
 - **Multi-transport Support**: Run via Server-Sent Events (SSE) or stdio for flexible integration
+- **General Question Answering**: Ask an LLM questions using a simple prompt
 
 ## Prerequisites
 
@@ -150,6 +151,22 @@ Example:
 ```json
 {
   "substring": "openai"
+}
+```
+
+### ask_question
+
+Send a prompt to an LLM and return the response.
+
+Parameters:
+- `prompt`: The question or statement to send
+- `model`: (Optional) The LLM model to use
+
+Example:
+```json
+{
+  "prompt": "What is the capital of France?",
+  "model": "gpt-4o"
 }
 ```
 
