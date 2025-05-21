@@ -51,6 +51,7 @@ This MCP server leverages Aider, a powerful AI coding assistant, to provide codi
 
 2. Install the package:
    ```bash
+   uv sync
    uv venv
    uv pip install -e .
    ```
