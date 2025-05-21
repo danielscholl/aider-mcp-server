@@ -149,7 +149,7 @@ def serve(editor_model: str = DEFAULT_EDITOR_MODEL,
     async def ask_question(ctx: Context, prompt: str, model: str | None = None) -> str:
         """Ask a question using the specified model and return the response."""
 
-        return ask_question_sync(prompt, model)
+        return await asyncio.to_thread(ask_question_sync, prompt, model)
     
     # Run the server
     transport = os.getenv("TRANSPORT", "sse")
